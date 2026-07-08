@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Запрошення на перший день народження — 14 серпня 2026, ресторан «Султан»">
+    <title>🌟 Чарівне запрошення на 1-й день народження 🌟</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎈%3C/text%3E%3C/svg%3E">
+    <!-- Tailwind CSS собран заранее (без runtime-компиляции в браузере) -->
+    <link rel="stylesheet" href="./tailwind.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
+            overflow-x: hidden;
+            color: #0c4a6e;
+        }
+
+        h1, h2, h3, .font-kids {
+            font-family: 'Caveat', cursive;
+        }
+
+        /* --- КОНТЕЙНЕРЫ И ПЕРЕХОДЫ --- */
+        #main-wrapper {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        #envelopeSection {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            z-index: 50;
+        }
+
+        #envelopeSection.hidden-smooth {
+            opacity: 0;
+            transform: translateY(-50px) scale(0.9);
+            pointer-events: none;
+        }
+
+        #invitationSection {
+            display: none;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(30px) scale(0.95);
+            transition: opacity 1s ease, transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            padding: 2rem 1rem;
+            margin-top: 2rem;
+            margin-bottom: 3rem;
+            width: 100%;
+        }
+
+        #invitationSection.active {
+            display: flex;
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+        }
+
+        /* --- ДИЗАЙН ПИСЬМА И КОНВЕРТА --- */
+        .artisan-sheet {
+            position: relative;
+        }
+
+        .artisan-sheet::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            box-shadow: 
+                0 30px 60px -15px rgba(2, 132, 199, 0.4),
+                0 0 0 10px rgba(255, 255, 255, 0.7);
+            border: 2px dashed rgba(56, 189, 248, 0.5); 
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .envelope {
+            position: relative;
+            width: 100%;
+            max-width: 340px;
+            height: 440px;
+            border-radius: 4px 4px 8px 8px;
+            box-shadow: 0 40px 80px -15px rgba(50, 120, 120, 0.6);
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            margin: 0 auto;
+        }
+        
+        .envelope:hover {
+            transform: translateY(-5px) rotate(-1deg);
+            box-shadow: 0 50px 90px -10px rgba(50, 120, 120, 0.7);
+        }
+
+        .envelope.opened {
+            transform: translateY(140px) scale(0.95);
+        }
+
+        .envelope-face {
+            position: absolute; inset: 0;
+            border-radius: 4px 4px 8px 8px;
+            background: linear-gradient(135deg, #74b4b4 0%, #5a9696 100%);
+            z-index: 5;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1); 
+        }
+
+        .envelope-pocket {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 98%;
+            border-radius: 0 0 8px 8px;
+            background: linear-gradient(135deg, #8dc8c8 0%, #68a9a9 100%);
+            z-index: 20;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.2); 
+        }
+
+        .letter-card {
+            position: absolute; top: 15px; left: 15px; right: 15px; bottom: 15px;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 30px 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+            transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease;
+            z-index: 10;
+        }
+        
+        .envelope.opened .letter-card {
+            transform: translateY(-340px) scale(1.02);
+            z-index: 40;
+            box-shadow: 0 30px 60px rgba(70, 140, 140, 0.5);
+        }
+
+        .envelope-flap-wrap {
+            position: absolute; top: 0; left: 0; width: 100%; height: 32%;
+            perspective: 800px;
+            z-index: 30;
+            pointer-events: none;
+        }
+        
+        .envelope-flap {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, #93cfcf, #7cbbbb);
+            border-radius: 0 0 16px 16px;
+            transform-origin: top;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15); 
+        }
+
+        .envelope-flap::after {
+            content: '';
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 35px;
+            height: 6px;
+            background: #508585; 
+            border-radius: 10px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.5), 0 1px 2px rgba(255,255,255,0.6);
+        }
+
+        .envelope.opened .envelope-flap-wrap { z-index: 5; }
+        .envelope.opened .envelope-flap { transform: rotateX(180deg); }
+
+        .ribbon-bow {
+            position: absolute;
+            top: 112px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140px;
+            height: 140px;
+            z-index: 40;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+            pointer-events: none;
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.25));
+        }
+        
+        .envelope.opened .ribbon-bow {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.5);
+        }
+
+        /* --- СТИЛИ ДЛЯ НАКЛЕЕК (ПОЛАРОИДОВ) --- */
+        .polaroid-sticker {
+            background: #fff;
+            padding: 5px;
+            border-radius: 9999px;
+            border: 3px solid #ffffff;
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.25), 0 0 0 1px #e2e8f0;
+            pointer-events: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            z-index: 30;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* --- КНОПКИ --- */
+        .btn-artisan {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            box-shadow: 0 6px 0 #0369a1, 0 15px 25px rgba(2, 132, 199, 0.4);
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .btn-artisan:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #0369a1, 0 20px 30px rgba(2, 132, 199, 0.5);
+        }
+        .btn-artisan:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #0369a1, 0 0 0 rgba(2, 132, 199, 0);
+        }
+
+        @keyframes gentle-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .btn-pulse-anim {
+            animation: gentle-pulse 2s infinite;
+        }
+        .btn-pulse-anim:hover {
+            animation: none;
+        }
+
+        .cloud-frame {
+            background-image: radial-gradient(circle at center, #ffffff 0%, rgba(255, 255, 255, 0.9) 70%, transparent 100%);
+            filter: drop-shadow(0 8px 16px rgba(2, 132, 199, 0.1));
+        }
+
+        /* --- АНИМАЦИИ --- */
+        @keyframes gentle-sway {
+            0%, 100% { transform: translate3d(0, 0, 0) rotate(-1.5deg); }
+            50% { transform: translate3d(0, -12px, 0) rotate(1.5deg); }
+        }
+        @keyframes cloud-drift {
+            0%, 100% { transform: translate3d(0, 0, 0); }
+            50% { transform: translate3d(15px, -5px, 0); }
+        }
+        @keyframes seal-pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+        @keyframes spin-wheel {
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes train-bounce {
+            0%, 100% { transform: translate3d(0, 0, 0); }
+            50% { transform: translate3d(0, -2px, 0); }
+        }
+        @keyframes puff-smoke {
+            0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.8; }
+            100% { transform: translate3d(0, -20px, 0) scale(1.5); opacity: 0; }
+        }
+
+        @keyframes balloon-float {
+            0%, 100% { transform: translate3d(0, 0, 0) rotate(-3deg); }
+            50% { transform: translate3d(0, -25px, 0) rotate(3deg); }
+        }
+
+        @keyframes hot-air-balloon-float {
+            0%, 100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
+            50% { transform: translate3d(0, -20px, 0) rotate(2deg); }
+        }
+
+        .balloon-deco {
+            position: absolute;
+            pointer-events: none;
+            filter: drop-shadow(0 10px 15px rgba(2, 132, 199, 0.2));
+            animation: balloon-float 5s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        .hot-air-balloon-anim {
+            animation: hot-air-balloon-float 7s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        .sway-animation { animation: gentle-sway 6s ease-in-out infinite; }
+        .cloud-animation { animation: cloud-drift 8s ease-in-out infinite; }
+        .seal-animation { animation: seal-pulse 2.5s ease-in-out infinite; }
+        .wheel-spin { transform-origin: center; animation: spin-wheel 2.5s linear infinite; }
+        .train-anim { animation: train-bounce 0.5s ease-in-out infinite; }
+        
+        .smoke-1 { animation: puff-smoke 2s infinite ease-out; transform-origin: center; }
+        .smoke-2 { animation: puff-smoke 2s infinite ease-out 0.6s; transform-origin: center; }
+        .smoke-3 { animation: puff-smoke 2s infinite ease-out 1.2s; transform-origin: center; }
+
+        /* --- КОНФЕТТИ KАНВАС --- */
+        #confetti-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f0f9ff; }
+        ::-webkit-scrollbar-thumb { background: #7dd3fc; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
+
+        /* Уважаем системную настройку "уменьшить движение" (обычно включают на слабых/старых телефонах для экономии батареи) */
+        @media (prefers-reduced-motion: reduce) {
+            .btn-pulse-anim,
+            .balloon-deco,
+            .hot-air-balloon-anim,
+            .sway-animation,
+            .cloud-animation,
+            .seal-animation,
+            .wheel-spin,
+            .train-anim,
+            .smoke-1, .smoke-2, .smoke-3 {
+                animation: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start p-4 md:p-8">
+
+    <audio id="bgMusic" src="./audio/music.mp3" loop></audio>
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Фоновые элементы (Ваши картинки) -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <!-- Сонце -->
+        <img src="./images/солнце.png" class="absolute top-4 right-2 md:right-10 w-32 md:w-48 h-auto opacity-90 seal-animation drop-shadow-lg" alt="Сонце">
+        
+        <!-- Хмарки (основні, картинки) -->
+        <img src="./images/облако.png" class="absolute top-12 left-[-5%] w-48 md:w-64 h-auto opacity-70 cloud-animation drop-shadow-md" alt="Хмаринка">
+        <img src="./images/облако2.png" class="absolute top-1/3 right-[-10%] w-52 md:w-80 h-auto opacity-40 cloud-animation drop-shadow-md" style="animation-delay: -3s;" alt="Хмаринка 2">
+
+        <!-- Додаткові намальовані хмаринки для більш "хмарного" фону, як на референсі -->
+        <svg class="absolute top-[5%] left-[10%] w-16 md:w-20 h-auto opacity-40 cloud-animation drop-shadow-sm" style="animation-delay:-1.5s;" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="60" cy="70" rx="45" ry="26" fill="#ffffff"/><ellipse cx="100" cy="52" rx="36" ry="30" fill="#ffffff"/><ellipse cx="140" cy="68" rx="40" ry="24" fill="#ffffff"/><ellipse cx="92" cy="78" rx="62" ry="18" fill="#ffffff"/>
+        </svg>
+        <svg class="absolute top-[22%] right-[6%] w-14 md:w-16 h-auto opacity-50 cloud-animation drop-shadow-sm" style="animation-delay:-4.2s;" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="60" cy="70" rx="45" ry="26" fill="#ffffff"/><ellipse cx="100" cy="52" rx="36" ry="30" fill="#ffffff"/><ellipse cx="140" cy="68" rx="40" ry="24" fill="#ffffff"/><ellipse cx="92" cy="78" rx="62" ry="18" fill="#ffffff"/>
+        </svg>
+        <svg class="absolute top-[45%] left-[2%] w-20 md:w-24 h-auto opacity-70 cloud-animation drop-shadow-sm" style="animation-delay:-2.7s;" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="60" cy="70" rx="45" ry="26" fill="#ffffff"/><ellipse cx="100" cy="52" rx="36" ry="30" fill="#ffffff"/><ellipse cx="140" cy="68" rx="40" ry="24" fill="#ffffff"/><ellipse cx="92" cy="78" rx="62" ry="18" fill="#ffffff"/>
+        </svg>
+        <svg class="absolute top-[60%] right-[3%] w-16 md:w-20 h-auto opacity-40 cloud-animation drop-shadow-sm" style="animation-delay:-6s;" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="60" cy="70" rx="45" ry="26" fill="#ffffff"/><ellipse cx="100" cy="52" rx="36" ry="30" fill="#ffffff"/><ellipse cx="140" cy="68" rx="40" ry="24" fill="#ffffff"/><ellipse cx="92" cy="78" rx="62" ry="18" fill="#ffffff"/>
+        </svg>
+        <svg class="absolute bottom-[10%] left-[15%] w-24 md:w-28 h-auto opacity-50 cloud-animation drop-shadow-sm" style="animation-delay:-3.6s;" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="60" cy="70" rx="45" ry="26" fill="#ffffff"/><ellipse cx="100" cy="52" rx="36" ry="30" fill="#ffffff"/><ellipse cx="140" cy="68" rx="40" ry="24" fill="#ffffff"/><ellipse cx="92" cy="78" rx="62" ry="18" fill="#ffffff"/>
+        </svg>
+        <svg class="absolute bottom-[20%] right-[18%] w-14 md:w-16 h-auto opacity-40 cloud-animation drop-shadow-sm" style="animation-delay:-5s;" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="60" cy="70" rx="45" ry="26" fill="#ffffff"/><ellipse cx="100" cy="52" rx="36" ry="30" fill="#ffffff"/><ellipse cx="140" cy="68" rx="40" ry="24" fill="#ffffff"/><ellipse cx="92" cy="78" rx="62" ry="18" fill="#ffffff"/>
+        </svg>
+
+        <!-- МНОГО ШАРИКІВ по всій сторінці (фон) -->
+        <img src="./images/шарик_красный.png" class="balloon-deco top-[8%] left-[8%] w-10 md:w-14 opacity-80" style="animation-delay:-0.5s;" alt="Кулька">
+        <img src="./images/шарик_синий.png" class="balloon-deco top-[16%] left-[22%] w-8 md:w-11 opacity-70" style="animation-delay:-2.1s;" alt="Кулька">
+        <img src="./images/шарик_красный.png" class="balloon-deco top-[6%] right-[18%] w-9 md:w-12 opacity-75" style="animation-delay:-3.4s;" alt="Кулька">
+        <img src="./images/шарик_синий.png" class="balloon-deco top-[28%] left-[4%] w-12 md:w-16 opacity-80" style="animation-delay:-1.2s;" alt="Кулька">
+        <img src="./images/шарик_красный.png" class="balloon-deco top-[34%] right-[6%] w-10 md:w-14 opacity-70" style="animation-delay:-4s;" alt="Кулька">
+        <img src="./images/шарик_синий.png" class="balloon-deco top-[42%] left-[14%] w-8 md:w-10 opacity-40" style="animation-delay:-2.8s;" alt="Кулька">
+        <img src="./images/шарик_красный.png" class="balloon-deco top-[48%] right-[24%] w-11 md:w-14 opacity-75" style="animation-delay:-0.8s;" alt="Кулька">
+        <img src="./images/шарик_синий.png" class="balloon-deco top-[55%] left-[6%] w-9 md:w-12 opacity-70" style="animation-delay:-3.9s;" alt="Кулька">
+        <img src="./images/шарик_красный.png" class="balloon-deco top-[60%] right-[10%] w-12 md:w-16 opacity-80" style="animation-delay:-1.7s;" alt="Кулька">
+        <img src="./images/шарик_синий.png" class="balloon-deco top-[68%] left-[20%] w-10 md:w-13 opacity-65" style="animation-delay:-2.5s;" alt="Кулька">
+        <img src="./images/шарик_красный.png" class="balloon-deco top-[74%] right-[16%] w-9 md:w-12 opacity-75" style="animation-delay:-4.4s;" alt="Кулька">
+        <img src="./images/шарик_синий.png" class="balloon-deco top-[82%] left-[10%] w-11 md:w-15 opacity-70" style="animation-delay:-0.3s;" alt="Кулька">
+        <img src="./images/шарик_красный.png" class="balloon-deco top-[88%] right-[22%] w-10 md:w-14 opacity-80" style="animation-delay:-3.1s;" alt="Кулька">
+        <img src="./images/шарик_синий.png" class="balloon-deco top-[94%] left-[30%] w-8 md:w-11 opacity-40" style="animation-delay:-1.9s;" alt="Кулька">
+        <img src="./images/шарик_красный.png" class="balloon-deco top-[20%] right-[38%] w-8 md:w-10 opacity-40" style="animation-delay:-2.3s;" alt="Кулька">
+        <img src="./images/шарик_синий.png" class="balloon-deco top-[64%] left-[36%] w-9 md:w-12 opacity-65" style="animation-delay:-4.8s;" alt="Кулька">
+
+        <!-- Дуже великі хмари знизу -->
+        <div class="fixed bottom-0 left-0 w-full h-[30vh] pointer-events-none z-0">
+            <!-- Light blue back layer -->
+            <div class="absolute bottom-0 left-0 w-full h-full opacity-70">
+                <div class="absolute bottom-0 left-[-10%] w-[40vw] h-[40vw] max-w-[400px] max-h-[400px] bg-sky-200 rounded-full translate-y-[50%]"></div>
+                <div class="absolute bottom-0 left-[15%] w-[35vw] h-[35vw] max-w-[350px] max-h-[350px] bg-sky-200 rounded-full translate-y-[40%]"></div>
+                <div class="absolute bottom-0 left-[40%] w-[45vw] h-[45vw] max-w-[450px] max-h-[450px] bg-sky-200 rounded-full translate-y-[30%]"></div>
+                <div class="absolute bottom-0 left-[70%] w-[38vw] h-[38vw] max-w-[380px] max-h-[380px] bg-sky-200 rounded-full translate-y-[25%]"></div>
+                <div class="absolute bottom-0 right-[-10%] w-[42vw] h-[42vw] max-w-[420px] max-h-[420px] bg-sky-200 rounded-full translate-y-[45%]"></div>
+            </div>
+            
+            <!-- White front layer -->
+            <div class="absolute bottom-0 left-0 w-full h-full">
+                <div class="absolute bottom-0 left-[-15%] w-[45vw] h-[45vw] max-w-[450px] max-h-[450px] bg-white rounded-full translate-y-[55%]"></div>
+                <div class="absolute bottom-0 left-[10%] w-[30vw] h-[30vw] max-w-[300px] max-h-[300px] bg-white rounded-full translate-y-[40%]"></div>
+                <div class="absolute bottom-0 left-[30%] w-[40vw] h-[40vw] max-w-[400px] max-h-[400px] bg-white rounded-full translate-y-[35%]"></div>
+                <div class="absolute bottom-0 left-[55%] w-[35vw] h-[35vw] max-w-[350px] max-h-[350px] bg-white rounded-full translate-y-[30%]"></div>
+                <div class="absolute bottom-0 left-[75%] w-[40vw] h-[40vw] max-w-[400px] max-h-[400px] bg-white rounded-full translate-y-[45%]"></div>
+                <div class="absolute bottom-0 right-[-15%] w-[48vw] h-[48vw] max-w-[480px] max-h-[480px] bg-white rounded-full translate-y-[60%]"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Кнопка музыки -->
+    <button id="musicToggleBtn" onclick="toggleMusic()" class="fixed top-6 right-6 z-[100] bg-white/90 backdrop-blur-md border border-sky-200/60 p-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all text-sky-600 focus:outline-none flex items-center justify-center cursor-pointer pointer-events-auto" aria-label="Включити музику">
+        <svg id="musicOffIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+        </svg>
+        <svg id="musicOnIcon" class="w-6 h-6 hidden animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+        </svg>
+    </button>
+
+    <div id="envelopeSection" class="w-full flex flex-col items-center justify-center min-h-[85vh] z-10 transition-all duration-1000">
+        <h2 class="text-teal-800 text-2xl md:text-3xl font-bold text-center mb-10 px-4 font-kids drop-shadow-lg">
+            ✨ На Вас чекає особливий лист ✨<br>
+            <span class="text-teal-600/80 text-sm md:text-base font-normal mt-2 block drop-shadow-sm">Торкніться стрічки, щоб відчинити</span>
+        </h2>
+
+        <div class="envelope-container w-full max-w-[440px] flex justify-center items-center px-4">
+            <div id="interactiveEnvelope" class="envelope cursor-pointer" onclick="openEnvelope()">
+                
+                <div class="envelope-face"></div>
+                
+                <div class="letter-card text-center flex flex-col items-center justify-center">
+                    <p class="text-teal-700 font-bold font-kids text-2xl mb-6 drop-shadow-md">Запрошення</p>
+                    <div class="w-16 h-[2px] bg-teal-300 rounded mb-6 shadow-sm"></div>
+                    <p class="text-sm text-teal-600 uppercase tracking-widest px-4 leading-relaxed font-semibold drop-shadow-sm">На перший<br>день народження</p>
+                </div>
+
+                <div class="envelope-pocket"></div>
+                <div class="envelope-flap-wrap"><div class="envelope-flap"></div></div>
+                
+                <div class="ribbon-bow seal-animation">
+                    <svg viewBox="0 0 100 100" class="w-full h-full filter drop-shadow-2xl">
+                        <path d="M 45 55 Q 35 75 30 90 L 40 92 Q 45 75 50 55 Z" fill="#f1f5f9"/>
+                        <path d="M 55 55 Q 65 75 70 90 L 60 92 Q 55 75 50 55 Z" fill="#e2e8f0"/>
+                        <path d="M 47 50 C 15 40 10 60 30 65 C 40 65 45 55 47 50 Z" fill="#ffffff"/>
+                        <path d="M 53 50 C 85 40 90 60 70 65 C 60 65 55 55 53 50 Z" fill="#f8fafc"/>
+                        <rect x="43" y="47" width="14" height="10" rx="3" fill="#ffffff"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="invitationSection" class="w-full max-w-lg artisan-sheet p-6 md:p-8 text-center relative z-10 hidden opacity-0 transform translate-y-20 transition-all duration-1000 flex flex-col items-center">
+        
+        <!-- Шарики на углах карточки -->
+        <img src="./images/шарик_красный.png" class="absolute -top-6 -left-6 md:-top-10 md:-left-10 w-16 md:w-24 z-30 opacity-95 balloon-deco" style="animation-delay:-1.2s;" alt="Кулька">
+        <img src="./images/шарик_синий.png" class="absolute -top-8 -right-4 md:-top-12 md:-right-8 w-14 md:w-20 z-30 opacity-95 balloon-deco" style="animation-delay:-0.5s;" alt="Кулька">
+        <img src="./images/шарик_синий.png" class="absolute -bottom-4 -left-8 md:-bottom-8 md:-left-12 w-14 md:w-20 z-30 opacity-85 balloon-deco" style="animation-delay:-3.2s;" alt="Кулька">
+        <img src="./images/шарик_красный.png" class="absolute -bottom-6 -right-6 md:-bottom-10 md:-right-10 w-16 md:w-24 z-30 opacity-85 balloon-deco" style="animation-delay:-1.8s;" alt="Кулька">
+
+        <!-- ДЕКОР: Фото-наклейки (Полароиды) по краям -->
+        <img src="./images/малюк1.webp" class="polaroid-sticker absolute -left-4 md:-left-12 top-[5%] w-24 md:w-36 h-auto transform -rotate-6 hover:scale-110 hover:-rotate-2 z-30" alt="Декор">
+        <img src="./images/малюк2.webp" class="polaroid-sticker absolute -right-4 md:-right-12 top-[22%] w-20 md:w-32 h-auto transform rotate-12 hover:scale-110 hover:rotate-6 z-30" alt="Декор">
+        <img src="./images/малюк3.webp" class="polaroid-sticker absolute -left-3 md:-left-10 bottom-[45%] w-20 md:w-32 h-auto transform -rotate-12 hover:scale-110 hover:-rotate-6 z-30" alt="Декор">
+        <img src="./images/малюк4.webp" class="polaroid-sticker absolute -right-3 md:-right-12 bottom-[24%] w-24 md:w-36 h-auto transform rotate-6 hover:scale-110 hover:rotate-12 z-30" alt="Декор">
+
+        <!-- БАГАТО КУЛЬОК справа знизу -->
+        <div class="absolute -right-3 md:-right-16 bottom-[10%] w-24 md:w-48 h-auto -z-10 flex items-center justify-center sway-animation pointer-events-none opacity-40" style="animation-delay:-2.4s;">
+            <img src="./images/воздушный_шар.png" class="w-full h-auto drop-shadow-sm" alt="Багато кульок">
+        </div>
+
+        <!-- БАГАТО КУЛЬОК зліва -->
+        <div class="absolute -left-3 md:-left-20 top-[8%] w-24 md:w-56 h-auto -z-10 flex items-center justify-center sway-animation pointer-events-none opacity-40" style="animation-delay:-4.6s;">
+            <img src="./images/воздушный_шар.png" class="w-full h-auto drop-shadow-sm" alt="Багато кульок">
+        </div>
+
+        <!-- ВАШИ ОБЛАКА возле заголовка -->
+        <div class="w-full flex justify-between items-start mb-4 relative z-20">
+            <div class="w-16 md:w-28 h-auto cloud-animation opacity-90 drop-shadow-sm">
+                <img src="./images/облако.png" class="w-full h-auto" alt="Хмаринка">
+            </div>
+            <div class="w-20 md:w-32 h-auto cloud-animation opacity-90 drop-shadow-sm" style="animation-delay: -4s;">
+                <img src="./images/облако2.png" class="w-full h-auto" alt="Хмаринка 2">
+            </div>
+        </div>
+
+        <!-- ОСНОВА ПІД ВОЗДУШНИЙ ШАР (ПАРИТ СПРАВА) -->
+        <div class="absolute top-[6%] -right-2 md:top-[12%] md:-right-28 w-20 md:w-64 h-auto z-30 pointer-events-none hot-air-balloon-anim">
+            <img src="./images/воздушный_шар.png" class="w-full h-auto drop-shadow-lg" alt="Повітряна кулька">
+        </div>
+
+        <p class="text-sky-500 font-bold uppercase tracking-wider text-xs md:text-sm mb-2 font-kids relative z-20">Мій перший святковий рік</p>
+        <h1 class="text-3xl md:text-4xl text-sky-900 font-extrabold mb-8 leading-tight tracking-wide drop-shadow-sm relative z-20">Запрошення</h1>
+
+        <!-- ФОТО МАЛЫША С РАМКОЙ -->
+        <div class="relative w-48 h-48 md:w-56 md:h-56 mb-8 flex items-center justify-center z-20">
+            <div class="absolute inset-[-12px] cloud-frame rounded-full"></div>
+            
+            <div class="absolute inset-0 rounded-full bg-white p-2 border-[5px] border-sky-100 shadow-md overflow-hidden flex items-center justify-center hover:scale-105 transition-transform duration-300">
+                <!-- Ваше главное фото -->
+                <img id="babyPhoto" src="./images/baby.png" onerror="this.onerror=null; document.getElementById('babyPhoto').classList.add('hidden'); document.getElementById('photoPlaceholder').classList.remove('hidden');" class="w-full h-full object-cover rounded-full" alt="Фото малюка">
+                
+                <div id="photoPlaceholder" class="hidden w-full h-full flex-col items-center justify-center p-4 text-center bg-sky-50 rounded-full">
+                    <span class="text-4xl mb-2 drop-shadow-md">👶</span>
+                    <span class="text-[10px] text-sky-600 font-bold leading-tight px-4 drop-shadow-sm">Додайте baby.png в папку "images"</span>
+                </div>
+            </div>
+
+            <!-- Party Hat Emblem -->
+            <div class="absolute -top-5 -right-3 bg-gradient-to-br from-yellow-300 to-amber-400 text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md border-2 border-white transform rotate-12 z-20 font-kids">
+                Мені 1 рік! 🎉
+            </div>
+        </div>
+
+        <div class="space-y-4 max-w-sm mb-8 px-2 relative z-20">
+            <h3 class="text-xl md:text-2xl font-bold text-sky-700 font-kids">Дорогі мої рідні!</h3>
+            <p class="text-slate-600 leading-relaxed text-sm md:text-base font-semibold">
+                Запрошую вас на святкування мого першого дня народження!
+            </p>
+        </div>
+
+        <!-- DATE & TIME BLOCK -->
+        <div class="w-full bg-white rounded-2xl p-5 mb-8 border border-sky-100 shadow-sm grid grid-cols-3 divide-x divide-sky-100 relative z-20">
+            <div class="flex flex-col items-center justify-center p-1">
+                <span class="text-4xl md:text-5xl font-extrabold text-sky-500 font-kids">14</span>
+                <span class="text-[10px] text-sky-400 font-bold uppercase tracking-wider mt-1.5">Серпня</span>
+            </div>
+            <div class="flex flex-col items-center justify-center p-1">
+                <span class="text-xl md:text-2xl font-bold text-sky-800 font-kids">2026</span>
+                <span class="text-[10px] text-sky-400 font-bold uppercase tracking-wider mt-1.5">Рік</span>
+            </div>
+            <div class="flex flex-col items-center justify-center p-1">
+                <span class="text-base md:text-lg font-bold text-sky-800">П'ятниця</span>
+                <span class="text-xs font-semibold text-slate-500 mt-1.5">14:00</span>
+            </div>
+        </div>
+
+        <!-- ADDRESS & LOCATION BLOCK -->
+        <div class="w-full bg-sky-50 rounded-2xl p-5 mb-8 border border-sky-100 shadow-sm flex flex-col items-center relative z-40">
+            <div class="flex items-center gap-2 text-sky-600 font-bold mb-3">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <circle cx="12" cy="11" r="3" fill="currentColor" />
+                </svg>
+                <span class="font-kids text-sm md:text-base">За адресою:</span>
+            </div>
+            <p class="text-slate-600 font-semibold mb-1 text-sm md:text-base">м. Самар, вул. Паланочна 64а</p>
+            <p class="text-sky-800 font-extrabold text-lg md:text-xl mb-4">ресторан «Султан»</p>
+            
+            <a href="https://www.google.com/maps/dir/?api=1&destination=%D0%9A%D0%B0%D1%84%D0%B5%20%D0%A1%D1%83%D0%BB%D1%82%D0%B0%D0%BD%2C%20%D0%B2%D1%83%D0%BB%D0%B8%D1%86%D1%8F%20%D0%9F%D0%B0%D0%BB%D0%B0%D0%BD%D0%BE%D1%87%D0%BD%D0%B0%2C%2064%D0%B0%2C%20%D0%9D%D0%BE%D0%B2%D0%BE%D0%BC%D0%BE%D1%81%D0%BA%D0%BE%D0%B2%D1%81%D1%8C%D0%BA" rel="noopener noreferrer" class="text-white font-bold text-sm md:text-base px-8 py-4 rounded-full flex items-center gap-3 btn-artisan btn-pulse-anim relative z-50 cursor-pointer" style="pointer-events: auto;">
+                <span>Прокласти маршрут</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+            </a>
+        </div>
+
+        <!-- COUNTDOWN TIMER -->
+        <div class="w-full border-t border-dashed border-sky-200 pt-6 mb-4 relative z-20">
+            <p class="text-sky-700 font-bold mb-4 text-xs md:text-sm font-kids">До свята залишилось:</p>
+            <div class="grid grid-cols-4 gap-3 max-w-sm mx-auto">
+                <div class="bg-white border border-sky-100 rounded-xl p-2 shadow-sm">
+                    <span id="daysCount" class="block text-2xl font-bold text-sky-500 font-kids">00</span>
+                    <span class="text-[9px] text-sky-400 uppercase font-bold">Днів</span>
+                </div>
+                <div class="bg-white border border-sky-100 rounded-xl p-2 shadow-sm">
+                    <span id="hoursCount" class="block text-2xl font-bold text-sky-500 font-kids">00</span>
+                    <span class="text-[9px] text-sky-400 uppercase font-bold">Годин</span>
+                </div>
+                <div class="bg-white border border-sky-100 rounded-xl p-2 shadow-sm">
+                    <span id="minsCount" class="block text-2xl font-bold text-sky-500 font-kids">00</span>
+                    <span class="text-[9px] text-sky-400 uppercase font-bold">Хвилин</span>
+                </div>
+                <div class="bg-white border border-sky-100 rounded-xl p-2 shadow-sm">
+                    <span id="secsCount" class="block text-2xl font-bold text-sky-500 font-kids">00</span>
+                    <span class="text-[9px] text-sky-400 uppercase font-bold">Секунд</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВАШ ПАРОВОЗИК, ДОМИКИ И КОЛЕСА -->
+        <div class="w-full mt-6 border-t border-sky-100 pt-8 flex flex-col items-center relative overflow-hidden h-[160px] md:h-[200px] z-20">
+
+            <!-- Хмаринки (Фон неба за поїздом) -->
+            <svg class="absolute top-1 left-[2%] w-24 md:w-32 h-auto opacity-70 cloud-animation z-0" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="60" cy="70" rx="45" ry="26" fill="#ffffff"/>
+                <ellipse cx="100" cy="52" rx="36" ry="30" fill="#ffffff"/>
+                <ellipse cx="140" cy="68" rx="40" ry="24" fill="#ffffff"/>
+                <ellipse cx="92" cy="78" rx="62" ry="18" fill="#ffffff"/>
+            </svg>
+            <svg class="absolute top-6 right-[8%] w-20 md:w-28 h-auto opacity-40 cloud-animation z-0" style="animation-delay:-3s;" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="60" cy="70" rx="45" ry="26" fill="#ffffff"/>
+                <ellipse cx="100" cy="52" rx="36" ry="30" fill="#ffffff"/>
+                <ellipse cx="140" cy="68" rx="40" ry="24" fill="#ffffff"/>
+                <ellipse cx="92" cy="78" rx="62" ry="18" fill="#ffffff"/>
+            </svg>
+            <svg class="absolute top-2 left-[38%] w-16 md:w-20 h-auto opacity-50 cloud-animation z-0" style="animation-delay:-5.5s;" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="60" cy="70" rx="45" ry="26" fill="#ffffff"/>
+                <ellipse cx="100" cy="52" rx="36" ry="30" fill="#ffffff"/>
+                <ellipse cx="140" cy="68" rx="40" ry="24" fill="#ffffff"/>
+                <ellipse cx="92" cy="78" rx="62" ry="18" fill="#ffffff"/>
+            </svg>
+
+            <!-- Рельсы -->
+            <div class="absolute bottom-[20px] w-full border-b-[3px] border-dashed border-slate-300 z-10"></div>
+            
+            <!-- Домики (Фон) -->
+            <img src="./images/домик1.png" class="absolute right-[15%] md:right-[20%] bottom-[35px] md:bottom-[45px] w-16 md:w-20 h-auto drop-shadow-sm z-0 opacity-95" alt="Будиночок">
+            <img src="./images/домик2.png" class="absolute right-[-4%] md:-right-[4%] bottom-[20px] md:bottom-[25px] w-20 md:w-24 h-auto drop-shadow-sm z-0 opacity-95" alt="Будиночок">
+
+            <!-- Контейнер для поезда (Все внутри него будет двигаться вместе) -->
+            <div class="absolute bottom-[20px] left-[5%] md:left-[10%] w-[220px] md:w-[280px] train-anim z-20">
+                
+                <!-- Дым -->
+                <div class="absolute -top-10 left-[18%] w-4 h-4 bg-sky-100 rounded-full smoke-3 shadow-sm"></div>
+                <div class="absolute -top-6 left-[23%] w-5 h-5 bg-sky-100 rounded-full smoke-2 shadow-sm"></div>
+                <div class="absolute -top-2 left-[28%] w-6 h-6 bg-sky-100 rounded-full smoke-1 shadow-sm"></div>
+
+                <!-- Основа: Ваша картинка обрезанного паровозика -->
+                <img src="./images/паравозик.png" class="w-full h-auto drop-shadow-lg relative z-10 block" alt="Паровоз">
+
+                <!-- Колеса, намальовані на SVG (рівно стоять на рейках, симетрично, без перекосу вправо) -->
+                <!-- Всі три колеса однакового меньшого розміру, розставлені рівномірно по ширині поїзда -->
+                <div class="absolute bottom-0 left-[25%] w-[10%] aspect-square z-20 -translate-x-1/2 translate-y-[12%] wheel-spin drop-shadow-sm">
+                    <svg viewBox="0 0 100 100" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="46" fill="#0c4a6e"/>
+                        <circle cx="50" cy="50" r="46" fill="none" stroke="#0369a1" stroke-width="4"/>
+                        <circle cx="50" cy="50" r="32" fill="#38bdf8"/>
+                        <g stroke="#e0f2fe" stroke-width="7" stroke-linecap="round">
+                            <line x1="50" y1="22" x2="50" y2="78"/>
+                            <line x1="22" y1="50" x2="78" y2="50"/>
+                            <line x1="30" y1="30" x2="70" y2="70"/>
+                            <line x1="70" y1="30" x2="30" y2="70"/>
+                        </g>
+                        <circle cx="50" cy="50" r="12" fill="#e0f2fe"/>
+                        <circle cx="50" cy="50" r="12" fill="none" stroke="#0284c7" stroke-width="3"/>
+                    </svg>
+                </div>
+                
+                <div class="absolute bottom-0 left-[50%] w-[10%] aspect-square z-20 -translate-x-1/2 translate-y-[12%] wheel-spin drop-shadow-sm">
+                    <svg viewBox="0 0 100 100" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="46" fill="#0c4a6e"/>
+                        <circle cx="50" cy="50" r="46" fill="none" stroke="#0369a1" stroke-width="4"/>
+                        <circle cx="50" cy="50" r="32" fill="#38bdf8"/>
+                        <g stroke="#e0f2fe" stroke-width="7" stroke-linecap="round">
+                            <line x1="50" y1="22" x2="50" y2="78"/>
+                            <line x1="22" y1="50" x2="78" y2="50"/>
+                            <line x1="30" y1="30" x2="70" y2="70"/>
+                            <line x1="70" y1="30" x2="30" y2="70"/>
+                        </g>
+                        <circle cx="50" cy="50" r="12" fill="#e0f2fe"/>
+                        <circle cx="50" cy="50" r="12" fill="none" stroke="#0284c7" stroke-width="3"/>
+                    </svg>
+                </div>
+                
+                <div class="absolute bottom-0 left-[82%] w-[10%] aspect-square z-20 -translate-x-1/2 translate-y-[12%] wheel-spin drop-shadow-sm">
+                    <svg viewBox="0 0 100 100" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="46" fill="#0c4a6e"/>
+                        <circle cx="50" cy="50" r="46" fill="none" stroke="#0369a1" stroke-width="4"/>
+                        <circle cx="50" cy="50" r="32" fill="#38bdf8"/>
+                        <g stroke="#e0f2fe" stroke-width="7" stroke-linecap="round">
+                            <line x1="50" y1="22" x2="50" y2="78"/>
+                            <line x1="22" y1="50" x2="78" y2="50"/>
+                            <line x1="30" y1="30" x2="70" y2="70"/>
+                            <line x1="70" y1="30" x2="30" y2="70"/>
+                        </g>
+                        <circle cx="50" cy="50" r="12" fill="#e0f2fe"/>
+                        <circle cx="50" cy="50" r="12" fill="none" stroke="#0284c7" stroke-width="3"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        const targetDate = new Date("Aug 14, 2026 14:00:00").getTime();
+        const audio = document.getElementById('bgMusic');
+        let isPlaying = false;
+
+        function openEnvelope() {
+            const envelope = document.getElementById('interactiveEnvelope');
+            const envelopeSec = document.getElementById('envelopeSection');
+            const inviteSec = document.getElementById('invitationSection');
+
+            envelope.classList.add('opened');
+
+            playMusic();
+
+            setTimeout(() => {
+                fireConfetti();
+            }, 300);
+
+            setTimeout(() => {
+                envelopeSec.classList.add('opacity-0', 'scale-90');
+                envelopeSec.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    envelopeSec.style.display = 'none';
+                    inviteSec.classList.remove('hidden');
+                    setTimeout(() => {
+                        inviteSec.classList.add('active');
+                    }, 50);
+                }, 800);
+            }, 1000);
+        }
+
+        const countdownInterval = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                document.getElementById("daysCount").innerText = "00";
+                document.getElementById("hoursCount").innerText = "00";
+                document.getElementById("minsCount").innerText = "00";
+                document.getElementById("secsCount").innerText = "00";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("daysCount").innerText = days.toString().padStart(2, '0');
+            document.getElementById("hoursCount").innerText = hours.toString().padStart(2, '0');
+            document.getElementById("minsCount").innerText = minutes.toString().padStart(2, '0');
+            document.getElementById("secsCount").innerText = seconds.toString().padStart(2, '0');
+        }, 1000);
+
+        function playMusic() {
+            audio.play().then(() => {
+                isPlaying = true;
+                document.getElementById('musicOffIcon').classList.add('hidden');
+                document.getElementById('musicOnIcon').classList.remove('hidden');
+                document.getElementById('musicToggleBtn').setAttribute('aria-label', 'Вимкнути музику');
+            }).catch(() => {
+                console.log("Autoplay blocked");
+            });
+        }
+
+        function toggleMusic() {
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+                document.getElementById('musicOffIcon').classList.remove('hidden');
+                document.getElementById('musicOnIcon').classList.add('hidden');
+                document.getElementById('musicToggleBtn').setAttribute('aria-label', 'Включити музику');
+            } else {
+                playMusic();
+            }
+        }
+
+        function fireConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = [];
+            const colors = ['#38bdf8', '#fbbf24', '#f472b6', '#a78bfa', '#34d399', '#ffffff'];
+
+            for (let i = 0; i < 150; i++) {
+                pieces.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2 + 100,
+                    vx: (Math.random() - 0.5) * 25,
+                    vy: (Math.random() - 1) * 25 - 5,
+                    size: Math.random() * 8 + 5,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rotation: Math.random() * 360,
+                    rotationSpeed: (Math.random() - 0.5) * 10
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let active = false;
+
+                pieces.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.5;
+                    p.rotation += p.rotationSpeed;
+
+                    if (p.y < canvas.height) active = true;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+                });
+
+                if (active) requestAnimationFrame(animate);
+                else canvas.remove();
+            }
+            animate();
+            
+            window.addEventListener('resize', () => {
+                if(document.getElementById('confetti-canvas')){
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
